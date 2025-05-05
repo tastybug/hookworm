@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	//"github.com/tastybug/hookworm/internal/hookworm"
-	//"log"
 )
 
 const (
@@ -15,9 +14,6 @@ hookworm run
 `
 )
 
-/*
-Purpose: read arguments from command line and call port to process
-*/
 func main() {
 
 	// Check if a command is provided
