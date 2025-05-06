@@ -1,0 +1,7 @@
+hooks:
+  - name: yamllint
+    command: >-
+      echo 'yamllint running..'
+  - name: ansible-lint
+    command: >-
+      echo 'ansible-lint'
