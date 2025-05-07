@@ -1,4 +1,4 @@
-hooks:
+tasks:
   - name: fake yamllint
     command: >-
       echo 'yamllint running..'
