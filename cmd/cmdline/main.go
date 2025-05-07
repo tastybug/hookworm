@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	//"github.com/tastybug/hookworm/internal/hookworm"
 )
@@ -55,13 +56,13 @@ func main() {
 		fmt.Println("Hookworm installed successfully")
 	case "dry-run":
 		fmt.Println("Dry-run..")
-		if err := runHooks(); err != nil {
+		if err := executeHooks(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
 	case "trigger":
 		fmt.Println("Triggered....")
-		if err := runHooks(); err != nil {
+		if err := executeHooks(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
@@ -119,8 +120,18 @@ func findGitDir() (string, error) {
 	}
 }
 
-// runHooks loads and logs hooks from .hookworm.yml
-func runHooks() error {
+// HookExecutionError represents an error from a failed hook execution
+type HookExecutionError struct {
+	HookName string
+	ExitCode int
+}
+
+func (e *HookExecutionError) Error() string {
+	return fmt.Sprintf("hook %s failed with exit code %d", e.HookName, e.ExitCode)
+}
+
+// executeHooks loads and executes hooks from .hookworm.yaml
+func executeHooks() error {
 	config, err := loadPlay(configFile)
 	if err != nil {
 		return fmt.Errorf("loading config: %v", err)
@@ -128,6 +139,32 @@ func runHooks() error {
 
 	for i, hook := range config.Hooks {
 		log.Printf("Hook %d: Name=%s, Command=%s", i+1, hook.Name, hook.Command)
+
+		// Execute the command
+		cmd := exec.Command("sh", "-c", hook.Command)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+
+		// Check the exit code
+		var exitCode int
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				exitCode = exitErr.ExitCode()
+			} else {
+				return fmt.Errorf("executing hook %s: %v", hook.Name, err)
+			}
+		}
+
+		log.Printf("Hook %s completed with exit code %d", hook.Name, exitCode)
+
+		// Fail fast if exit code is non-zero
+		if exitCode != 0 {
+			return &HookExecutionError{
+				HookName: hook.Name,
+				ExitCode: exitCode,
+			}
+		}
 	}
 
 	return nil

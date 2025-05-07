@@ -1,7 +1,7 @@
 hooks:
-  - name: yamllint
+  - name: fake yamllint
     command: >-
       echo 'yamllint running..'
-  - name: ansible-lint
+  - name: dockerized true
     command: >-
-      echo 'ansible-lint'
+      docker run ubuntu /bin/sh -c 'true'
