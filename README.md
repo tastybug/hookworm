@@ -4,3 +4,4 @@ Git commit hook integrator
 ## Todo
 
 * be able to specify target folder when installing and running
+* add mode `hookworm init` which adds a sample task book
