@@ -11,7 +11,7 @@ import (
 func main() {
 
 	// Define flags
-	configPtr := flag.String("config", ".hookworm.yml", "Path to the hookplay config file")
+	configPtr := flag.String("config", ".hookworm.yml", "Path to the task book config file")
 	flag.Usage = printUsage
 	flag.Parse()
 
@@ -27,29 +27,26 @@ func main() {
 	err := printWorkingDirectory()
 	taskBook, err := hookworm.InitializeTaskBook(*configPtr)
 	if err != nil {
-		fmt.Errorf("Error loading taskBook: %v", err)
+		log.Printf("Error loading task book: %v\n", err)
 		os.Exit(1)
 	}
 
 	switch command {
 	case "install":
 		if err := hookworm.InstallHook(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error installing hook: %v\n", err)
+			log.Printf("Error installing hook: %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Println("Hookworm installed successfully")
-	case "test":
-		fmt.Println("Dry-run..")
+	case "run":
+		fmt.Println("Test..")
 		if err := hookworm.ExecuteTasks(taskBook); err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error running hooks: %v\n", err)
+			log.Printf("Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
-	case "trigger":
-		fmt.Println("Triggered....")
-		if err := hookworm.ExecuteTasks(taskBook); err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error running hooks: %v\n", err)
-			os.Exit(1)
-		}
+	case "help":
+		printUsage()
+		os.Exit(0)
 	default:
 		printUsage()
 		os.Exit(1)
@@ -59,7 +56,7 @@ func main() {
 func printWorkingDirectory() error {
 	cwd, err := os.Getwd()
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Error getting current working directory: %v\n", err)
+		_ = fmt.Errorf("error getting current working directory: %v", err)
 		os.Exit(1)
 	}
 	log.Printf("Current working directory: %s", cwd)
@@ -68,12 +65,11 @@ func printWorkingDirectory() error {
 
 // printUsage displays the command-line usage
 func printUsage() {
-	_, _ = fmt.Fprintf(os.Stderr, "Usage: hookworm [flags] <command>\n")
-	_, _ = fmt.Fprintf(os.Stderr, "Commands:\n")
-	_, _ = fmt.Fprintf(os.Stderr, "  install  Install hookworm as a Git pre-commit hook\n")
-	_, _ = fmt.Fprintf(os.Stderr, "  test     Manually test the hookworm checks\n")
-	_, _ = fmt.Fprintf(os.Stderr, "  trigger  Run the hookworm checks (called by Git pre-commit hook)\n")
-	_, _ = fmt.Fprintf(os.Stderr, "Flags:\n")
-	_, _ = fmt.Fprintf(os.Stderr, "Flags:\n")
+	_, _ = fmt.Printf("Usage: hookworm [flags] <command>\n")
+	_, _ = fmt.Printf("Commands:\n")
+	_, _ = fmt.Printf("  install  Install hookworm as a Git pre-commit hook\n")
+	_, _ = fmt.Printf("  run      Run the hookworm checks\n")
+	_, _ = fmt.Printf("  help     Show this help\n")
+	_, _ = fmt.Printf("Flags:\n")
 	flag.PrintDefaults()
 }

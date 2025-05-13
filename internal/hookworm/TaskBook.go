@@ -20,10 +20,10 @@ type TaskBook struct {
 
 // InitializeTaskBook reads and parses .hookworm.yml
 func InitializeTaskBook(configFilePath string) (*TaskBook, error) {
-	fmt.Printf("Reading config from %s", configFilePath)
+	log.Printf("Reading config from %s\n", configFilePath)
 	data, err := os.ReadFile(configFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("reading %s: %v", configFilePath, err)
+		return nil, err
 	}
 
 	var config TaskBook
