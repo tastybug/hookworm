@@ -18,7 +18,7 @@ func (e *HookExecutionError) Error() string {
 }
 
 // ExecuteTasks loads and executes hooks from .hookworm.yaml
-func ExecuteTasks(config *TaskBook) error {
+func ExecuteTasks(config *TaskBook, strict bool) error {
 
 	for i, hook := range config.Task {
 		log.Printf("Task %d: Name=%s, Command=%s", i+1, hook.Name, hook.Command)
@@ -42,7 +42,7 @@ func ExecuteTasks(config *TaskBook) error {
 		log.Printf("Task %s completed with exit code %d", hook.Name, exitCode)
 
 		// Fail fast if exit code is non-zero
-		if exitCode != 0 {
+		if exitCode != 0 && strict {
 			return &HookExecutionError{
 				HookName: hook.Name,
 				ExitCode: exitCode,

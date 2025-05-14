@@ -38,9 +38,15 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Println("Hookworm installed successfully")
-	case "run":
-		fmt.Println("Test..")
-		if err := hookworm.ExecuteTasks(taskBook); err != nil {
+	case "advise":
+		fmt.Println("Log checks only..")
+		if err := hookworm.ExecuteTasks(taskBook, false); err != nil {
+			log.Printf("Error running hooks: %v\n", err)
+			os.Exit(1)
+		}
+	case "assert":
+		fmt.Println("Log and assert checks..")
+		if err := hookworm.ExecuteTasks(taskBook, true); err != nil {
 			log.Printf("Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
@@ -67,8 +73,9 @@ func printWorkingDirectory() error {
 func printUsage() {
 	_, _ = fmt.Printf("Usage: hookworm [flags] <command>\n")
 	_, _ = fmt.Printf("Commands:\n")
-	_, _ = fmt.Printf("  install  Install hookworm as a Git pre-commit hook\n")
-	_, _ = fmt.Printf("  run      Run the hookworm checks\n")
+	_, _ = fmt.Printf("  install  Install hookworm as an assertive Git pre-commit hook\n")
+	_, _ = fmt.Printf("  advise   Run checks, log findings and do not fail\n")
+	_, _ = fmt.Printf("  assert   Run checks, log findings and fail on issues\n")
 	_, _ = fmt.Printf("  help     Show this help\n")
 	_, _ = fmt.Printf("Flags:\n")
 	flag.PrintDefaults()
