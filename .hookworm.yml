@@ -1,7 +1,7 @@
 tasks:
-  - name: fake yamllint
+  - name: Sample check, returns true
     command: >-
-      echo 'yamllint running..'
+      /bin/sh -c 'true'
   - name: dockerized true
     command: >-
       docker run ubuntu /bin/sh -c 'true'
