@@ -18,7 +18,7 @@ func InstallHook() error {
 	// Find the .git directory
 	gitDir, err := findGitDir()
 	if err != nil {
-		return fmt.Errorf("finding .git directory: %v", err)
+		return err
 	}
 
 	// Define the hook file path

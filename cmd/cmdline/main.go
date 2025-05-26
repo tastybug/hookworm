@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/tastybug/hookworm/internal/hookworm"
 	"log"
 	"os"
+
+	"github.com/tastybug/hookworm/internal/hookworm"
 )
 
 func main() {
@@ -25,11 +26,6 @@ func main() {
 	command := args[0]
 
 	err := printWorkingDirectory()
-	taskBook, err := hookworm.InitializeTaskBook(*configPtr)
-	if err != nil {
-		log.Printf("Error loading task book: %v\n", err)
-		os.Exit(1)
-	}
 
 	switch command {
 	case "install":
@@ -39,12 +35,14 @@ func main() {
 		}
 		fmt.Println("Hookworm installed successfully")
 	case "advise":
+		taskBook := loadTaskBookOrFail(err, configPtr)
 		fmt.Println("Log checks only..")
 		if err := hookworm.ExecuteTasks(taskBook, false); err != nil {
 			log.Printf("Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
 	case "assert":
+		taskBook := loadTaskBookOrFail(err, configPtr)
 		fmt.Println("Log and assert checks..")
 		if err := hookworm.ExecuteTasks(taskBook, true); err != nil {
 			log.Printf("Error running hooks: %v\n", err)
@@ -57,6 +55,15 @@ func main() {
 		printUsage()
 		os.Exit(1)
 	}
+}
+
+func loadTaskBookOrFail(err error, configPtr *string) *hookworm.TaskBook {
+	taskBook, err := hookworm.InitializeTaskBook(*configPtr)
+	if err != nil {
+		log.Printf("Error loading task book: %v\n", err)
+		os.Exit(1)
+	}
+	return taskBook
 }
 
 func printWorkingDirectory() error {
@@ -73,10 +80,10 @@ func printWorkingDirectory() error {
 func printUsage() {
 	_, _ = fmt.Printf("Usage: hookworm [flags] <command>\n")
 	_, _ = fmt.Printf("Commands:\n")
-	_, _ = fmt.Printf("  install  Install hookworm as an assertive Git pre-commit hook\n")
-	_, _ = fmt.Printf("  advise   Run checks, log findings and do not fail\n")
-	_, _ = fmt.Printf("  assert   Run checks, log findings and fail on issues\n")
-	_, _ = fmt.Printf("  help     Show this help\n")
+	_, _ = fmt.Printf("  install  Install hookworm as an assertive Git pre-commit hook. Must be run in a working copy folder.\n")
+	_, _ = fmt.Printf("  advise   Run checks, log findings but does not fail.\n")
+	_, _ = fmt.Printf("  assert   Run checks, log findings and fail on issues.\n")
+	_, _ = fmt.Printf("  help     Show this help.\n")
 	_, _ = fmt.Printf("Flags:\n")
 	flag.PrintDefaults()
 }
