@@ -25,7 +25,7 @@ func main() {
 
 	command := args[0]
 
-	err := printWorkingDirectory()
+	printWorkingDirectory()
 
 	switch command {
 	case "install":
@@ -35,14 +35,14 @@ func main() {
 		}
 		fmt.Println("Hookworm installed successfully")
 	case "advise":
-		taskBook := loadTaskBookOrFail(err, configPtr)
+		taskBook := loadTaskBookOrFail(configPtr)
 		fmt.Println("Log checks only..")
 		if err := hookworm.ExecuteTasks(taskBook, false); err != nil {
 			log.Printf("Error running hooks: %v\n", err)
 			os.Exit(1)
 		}
 	case "assert":
-		taskBook := loadTaskBookOrFail(err, configPtr)
+		taskBook := loadTaskBookOrFail(configPtr)
 		fmt.Println("Log and assert checks..")
 		if err := hookworm.ExecuteTasks(taskBook, true); err != nil {
 			log.Printf("Error running hooks: %v\n", err)
@@ -57,7 +57,7 @@ func main() {
 	}
 }
 
-func loadTaskBookOrFail(err error, configPtr *string) *hookworm.TaskBook {
+func loadTaskBookOrFail(configPtr *string) *hookworm.TaskBook {
 	taskBook, err := hookworm.InitializeTaskBook(*configPtr)
 	if err != nil {
 		log.Printf("Error loading task book: %v\n", err)
@@ -66,14 +66,13 @@ func loadTaskBookOrFail(err error, configPtr *string) *hookworm.TaskBook {
 	return taskBook
 }
 
-func printWorkingDirectory() error {
+func printWorkingDirectory() {
 	cwd, err := os.Getwd()
 	if err != nil {
 		_ = fmt.Errorf("error getting current working directory: %v", err)
 		os.Exit(1)
 	}
 	log.Printf("Current working directory: %s", cwd)
-	return err
 }
 
 // printUsage displays the command-line usage
