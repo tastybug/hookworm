@@ -1,5 +1,5 @@
 check-fmt:
-	docker run --rm -v ${PWD}:/app -w /app golang:1.24 sh -c 'gofmt -l . | grep . && exit 1 || exit 0'
+	docker run --rm -v ${PWD}:/app -w /app golang:1.24-alpine sh -c 'gofmt -l . | grep . && exit 1 || exit 0'
 fmt:
 	go fmt ./...
 lint:
