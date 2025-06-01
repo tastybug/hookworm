@@ -1,7 +1,5 @@
 tasks:
-  - name: Sample check, returns true
-    command: >-
-      /bin/sh -c 'true'
-  - name: dockerized true
-    command: >-
-      docker run ubuntu /bin/sh -c 'true'
+  - name: is formatting required?
+    command: make check-fmt
+  - name: is the linter happy?
+    command: make lint
